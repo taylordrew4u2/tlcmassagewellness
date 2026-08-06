@@ -4,9 +4,9 @@ A booking website for **TLC Massage Wellness**, built so the owner can change
 every word of it from a password-protected admin — no developer, no CMS
 subscription, no code.
 
-Every treatment on the site is offered **free of charge**. There is no payment
-step anywhere in the app, and nothing it depends on costs money either: it runs
-on Vercel's Hobby plan with a free Postgres database.
+There is no payment step in the app yet — treatments have no price field. It
+runs on Vercel's Hobby plan with a free-tier Postgres database, so hosting
+costs nothing either.
 
 ---
 

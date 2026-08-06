@@ -220,9 +220,6 @@ export default function BookingForm({
         >
           {pending ? 'Sending…' : 'Send request'}
         </button>
-        <p className="text-xs font-light text-ink-soft">
-          No payment is taken — every treatment is free.
-        </p>
       </div>
     </form>
   );

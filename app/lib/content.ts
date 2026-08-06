@@ -90,7 +90,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         label: 'Sub-heading',
         type: 'textarea',
         default:
-          'Unhurried massage and wellness therapy in a quiet room, given with care.\nEvery treatment we offer is free.',
+          'Unhurried massage and wellness therapy in a quiet room, given with care.',
       },
       {
         key: 'hero_cta_label',
@@ -130,7 +130,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         type: 'textarea',
         help: 'Leave a blank line between paragraphs.',
         default:
-          'TLC Massage Wellness is a small, calm practice built around one idea: that looking after your body should never be a luxury.\n\nEvery treatment on our list is offered free of charge. There is nothing to pay when you arrive, nothing to pay when you leave, and no upsell in between — just an hour that belongs entirely to you.',
+          'TLC Massage Wellness is a small, calm practice built around one idea: that looking after your body should never be a luxury.\n\nEvery visit is unhurried and given full attention, with no upsell in between — just an hour that belongs entirely to you.',
       },
       {
         key: 'about_points',
@@ -138,7 +138,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         type: 'lines',
         help: 'One per line. They appear as a short list beside the text.',
         default:
-          'Qualified, insured therapists\nEvery treatment free of charge\nQuiet, private treatment rooms\nStep-free access throughout',
+          'Qualified, insured therapists\nUnhurried, personal attention\nQuiet, private treatment rooms\nStep-free access throughout',
       },
       {
         key: 'about_image_url',
