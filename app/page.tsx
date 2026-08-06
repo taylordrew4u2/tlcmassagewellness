@@ -210,11 +210,11 @@ export default async function HomePage() {
                     <h3 className="font-serif text-2xl font-light text-green-deep">
                       {service.name}
                     </h3>
-                    <div className="mt-3 flex items-center gap-3 text-[11px] font-light uppercase tracking-[0.2em] text-gold-deep">
-                      {service.duration ? <span>{service.duration}</span> : null}
-                      {service.duration ? <span className="text-green-soft">·</span> : null}
-                      <span>Free</span>
-                    </div>
+                    {service.duration ? (
+                      <div className="mt-3 flex items-center gap-3 text-[11px] font-light uppercase tracking-[0.2em] text-gold-deep">
+                        <span>{service.duration}</span>
+                      </div>
+                    ) : null}
                     {service.description ? (
                       <p className="mt-5 flex-1 text-sm font-light leading-relaxed text-ink-soft">
                         {service.description}

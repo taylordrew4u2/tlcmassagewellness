@@ -99,7 +99,7 @@ export default function ServicesPanel({ services: initial }: { services: Service
           <h2 className={sectionTitle}>Treatments</h2>
           <p className="mt-1 max-w-lg text-sm font-light text-ink-soft">
             What appears under “Our offer”, and what people can pick on the booking
-            form. Everything here is free — there is nowhere to put a price.
+            form. There is nowhere to put a price yet.
           </p>
         </div>
         <button type="button" onClick={add} className={primaryButton}>
