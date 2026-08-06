@@ -69,25 +69,38 @@ nothing you change in the admin will be saved until you do step 3.
 ### Step 3 — Add a free Postgres database
 
 1. Vercel project → **Storage** → **Create Database** → **Postgres** (Neon, free tier)
-2. Connect it to the project
+2. Connect it to the project, for all environments (Production, Preview, Development)
 
-Vercel injects the `POSTGRES_*` variables for you. The tables are created on the
-first request, and the treatment list is seeded once — if you delete every
-treatment it stays deleted.
+Vercel injects the connection variables for you — either `POSTGRES_URL` or
+`DATABASE_URL` depending on which flow provisioned it, and the app reads
+whichever is present. The tables are created on the first request, and the
+treatment list is seeded once — if you delete every treatment it stays deleted.
 
-### Step 4 — Environment variables
+### Step 4 — Add Blob storage for photo uploads
+
+1. Same project → **Storage** → **Create Database** → **Blob** (free tier)
+2. Connect it to the project, for all environments
+
+This adds `BLOB_READ_WRITE_TOKEN`, which is what lets the admin upload photos
+(hero background, about photo, team photos) instead of pasting a link. Without
+it, those fields still accept a pasted link — they just can't accept an
+uploaded file.
+
+### Step 5 — Environment variables
 
 Project → **Settings** → **Environment Variables**:
 
 | Variable | Required | Description |
 |---|---|---|
 | `ADMIN_PASSWORD` | Recommended | The `/admin` password. **Defaults to `Elliott1999`** if unset — set your own before the site goes live. |
-| `POSTGRES_URL` | Yes, for saving | Added automatically by the Storage step above. |
+| `POSTGRES_URL` / `DATABASE_URL` | Yes, for saving | Added automatically by the Postgres step above. |
+| `BLOB_READ_WRITE_TOKEN` | Yes, for photo uploads | Added automatically by the Blob step above. |
 
-### Step 5 — Redeploy
+### Step 6 — Redeploy
 
-**Deployments** → latest → **Redeploy**. Then open `/admin`, sign in, and make
-the site yours.
+**Deployments** → latest → **Redeploy** — this is required after connecting
+storage, since the running deployment was built before the variables existed.
+Then open `/admin`, sign in, and make the site yours.
 
 ---
 
@@ -104,7 +117,8 @@ npm run dev
 Without a database the app keeps everything in memory, so it runs and looks
 right but forgets on restart — the admin shows a banner saying so. To develop
 against real storage, copy the connection details from Vercel → Storage → your
-database → `.env.local`.
+database → `.env.local`. Do the same for Blob storage (`BLOB_READ_WRITE_TOKEN`)
+to test photo uploads locally.
 
 ---
 
@@ -137,6 +151,7 @@ app/
     ├── ServicesPanel.tsx     Treatment editor
     ├── TeamPanel.tsx         Team editor
     ├── ContentPanel.tsx      Website copy editor
+    ├── ImageUploadField.tsx  Photo upload widget, shared by the panels above
     └── ui.ts                 Shared class strings
 ```
 
@@ -161,4 +176,5 @@ everything else in Jost, both self-hosted at build time by `next/font`.
 
 - `next`, `react`, `react-dom` — App Router
 - `@vercel/postgres` — database client
+- `@vercel/blob` — photo upload storage
 - `tailwindcss`, `typescript`, `eslint`

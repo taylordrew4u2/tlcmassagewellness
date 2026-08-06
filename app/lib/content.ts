@@ -7,7 +7,7 @@
  * seeded copy, and in the typed `SiteContent` map all at once.
  */
 
-export type ContentFieldType = 'text' | 'textarea' | 'url' | 'toggle' | 'lines';
+export type ContentFieldType = 'text' | 'textarea' | 'url' | 'image' | 'toggle' | 'lines';
 
 export interface ContentField {
   key: string;
@@ -101,8 +101,8 @@ export const CONTENT_GROUPS: ContentGroup[] = [
       {
         key: 'hero_image_url',
         label: 'Background photo',
-        type: 'url',
-        help: 'Paste a link to an image. Leave empty for the soft green backdrop.',
+        type: 'image',
+        help: 'Upload a photo, or leave empty for the soft green backdrop.',
         default: '',
       },
     ],
@@ -143,7 +143,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
       {
         key: 'about_image_url',
         label: 'Photo',
-        type: 'url',
+        type: 'image',
         help: 'Optional. Leave empty for the leaf motif.',
         default: '',
       },

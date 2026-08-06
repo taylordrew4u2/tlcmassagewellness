@@ -3,6 +3,7 @@
 import { useActionState, useMemo, useState } from 'react';
 import { saveContentAction, type SaveState } from '../actions';
 import { CONTENT_GROUPS, type ContentField, type SiteContent } from '../lib/content';
+import ImageUploadField from './ImageUploadField';
 import { field as fieldClass, fieldLabel, help, primaryButton, sectionTitle } from './ui';
 
 /**
@@ -147,6 +148,18 @@ function Field({
           </span>
         </div>
       </div>
+    );
+  }
+
+  if (field.type === 'image') {
+    return (
+      <ImageUploadField
+        id={id}
+        label={field.label}
+        help={field.help}
+        value={value}
+        onChange={onChange}
+      />
     );
   }
 

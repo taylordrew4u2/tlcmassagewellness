@@ -16,8 +16,21 @@ import {
  * the admin uses to warn about exactly that.
  */
 
+/*
+ * Vercel's Postgres storage now provisions through the Neon marketplace
+ * integration, which sets `DATABASE_URL` rather than `POSTGRES_URL` — but the
+ * `sql` client below only ever reads `POSTGRES_URL`. Without this bridge, a
+ * project connected the current way would silently stay in memory-only mode.
+ */
+if (!process.env.POSTGRES_URL) {
+  process.env.POSTGRES_URL =
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    process.env.DATABASE_URL_UNPOOLED;
+}
+
 export function hasDatabase(): boolean {
-  return Boolean(process.env.POSTGRES_URL || process.env.DATABASE_URL);
+  return Boolean(process.env.POSTGRES_URL);
 }
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -126,7 +139,7 @@ const SEED_TEAM: TeamMemberInput[] = [
   {
     name: 'Add your therapists',
     role: 'Edit this from the admin',
-    bio: 'Sign in at /admin, open the Team tab, and replace this with the people who actually work here. You can add a photo by pasting an image link.',
+    bio: 'Sign in at /admin, open the Team tab, and replace this with the people who actually work here. You can add a photo by uploading one.',
     photo_url: '',
     sort_order: 1,
     is_active: true,

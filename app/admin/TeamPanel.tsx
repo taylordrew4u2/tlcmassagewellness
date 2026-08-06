@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { deleteTeamMemberAction, saveTeamMemberAction } from '../actions';
 import type { TeamMember } from '../lib/db';
 import { toHttpUrl } from '../lib/normalize';
+import ImageUploadField from './ImageUploadField';
 import {
   dangerButton,
   field,
@@ -87,8 +88,6 @@ export default function TeamPanel({ team: initial }: { team: TeamMember[] }) {
     });
   }
 
-  const preview = draft ? toHttpUrl(draft.photo_url) : null;
-
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -163,22 +162,15 @@ export default function TeamPanel({ team: initial }: { team: TeamMember[] }) {
               />
             </div>
 
-            <div>
-              <label className={fieldLabel} htmlFor="team-photo">
-                Photo link
-              </label>
-              <input
+            <div className="sm:col-span-2">
+              <ImageUploadField
                 id="team-photo"
-                type="url"
+                label="Photo"
+                help="Leave empty and their initial is shown instead."
                 value={draft.photo_url}
-                maxLength={500}
-                onChange={(e) => setDraft({ ...draft, photo_url: e.target.value })}
-                className={`mt-2 ${field}`}
-                placeholder="https://…"
+                onChange={(url) => setDraft({ ...draft, photo_url: url })}
+                rounded
               />
-              <p className={help}>
-                Leave empty and their initial is shown instead.
-              </p>
             </div>
 
             <div>
@@ -196,18 +188,6 @@ export default function TeamPanel({ team: initial }: { team: TeamMember[] }) {
               />
               <p className={help}>Lower numbers come first.</p>
             </div>
-
-            {preview ? (
-              <div className="sm:col-span-2">
-                <p className={fieldLabel}>Preview</p>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={preview}
-                  alt=""
-                  className="mt-2 h-24 w-24 rounded-full border border-green-wash object-cover"
-                />
-              </div>
-            ) : null}
 
             <label className="flex items-center gap-3 sm:col-span-2">
               <input

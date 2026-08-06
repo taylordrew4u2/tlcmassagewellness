@@ -146,6 +146,40 @@ select,
     transform 0.7s ease-out;
 }
 
+/* A slow, barely-there drift on the hero and about photos — long enough that
+   it reads as stillness with depth, not as a slideshow. */
+@keyframes slow-drift {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.animate-drift {
+  animation: slow-drift 16s ease-out forwards;
+}
+
+/* The underline a nav link grows on hover, drawn from the centre out. */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -0.3rem;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 0.35s ease-out;
+}
+.nav-link:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -153,6 +187,9 @@ select,
   .reveal-ready {
     opacity: 1;
     transform: none;
+  }
+  .animate-drift {
+    animation: none;
   }
   *,
   *::before,

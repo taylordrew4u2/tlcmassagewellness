@@ -92,7 +92,7 @@ export default function SiteNav({
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className={`text-[11px] font-light uppercase tracking-[0.24em] transition-colors ${linkClass}`}
+                  className={`nav-link text-[11px] font-light uppercase tracking-[0.24em] transition-colors ${linkClass}`}
                 >
                   {link.label}
                 </a>
@@ -100,7 +100,11 @@ export default function SiteNav({
             ))}
           </ul>
 
-          <a href="#top" className="shrink-0" aria-label={`${brandName} — home`}>
+          <a
+            href="#top"
+            className="shrink-0 transition-transform duration-300 hover:scale-105"
+            aria-label={`${brandName} — home`}
+          >
             <Logo
               mark={brandMark}
               tagline={brandTagline}
@@ -114,7 +118,7 @@ export default function SiteNav({
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className={`text-[11px] font-light uppercase tracking-[0.24em] transition-colors ${linkClass}`}
+                  className={`nav-link text-[11px] font-light uppercase tracking-[0.24em] transition-colors ${linkClass}`}
                 >
                   {link.label}
                 </a>
@@ -123,7 +127,7 @@ export default function SiteNav({
             <li>
               <a
                 href="#book"
-                className={`rounded-full border px-5 py-2 text-[11px] font-light uppercase tracking-[0.24em] transition-colors ${
+                className={`rounded-full border px-5 py-2 text-[11px] font-light uppercase tracking-[0.24em] transition-all duration-300 hover:-translate-y-0.5 ${
                   solid
                     ? 'border-gold text-gold-deep hover:bg-gold hover:text-cream'
                     : 'border-cream/70 text-cream hover:bg-cream hover:text-green-deep'
