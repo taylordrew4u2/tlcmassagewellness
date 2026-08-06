@@ -14,16 +14,20 @@ import SiteNav from './SiteNav';
 export default function SiteShell({
   content,
   base = '',
+  showTeam = true,
   children,
 }: {
   content: SiteContent;
   base?: string;
+  /** Hide the "Our team" link when the page has nobody to point it at —
+   *  the natural setup for a solo practitioner. */
+  showTeam?: boolean;
   children: React.ReactNode;
 }) {
   const links = [
     { href: `${base}#about`, label: 'About us' },
     { href: `${base}#offer`, label: 'Offer' },
-    { href: `${base}#team`, label: 'Our team' },
+    ...(showTeam ? [{ href: `${base}#team`, label: 'Our team' }] : []),
     { href: `${base}#contact`, label: 'Contact' },
   ];
 
