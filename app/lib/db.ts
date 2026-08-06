@@ -23,10 +23,16 @@ import {
  * project connected the current way would silently stay in memory-only mode.
  */
 if (!process.env.POSTGRES_URL) {
-  process.env.POSTGRES_URL =
+  /*
+   * Assigning `undefined` here would still set POSTGRES_URL, since Node
+   * coerces every process.env value to a string — leaving it as the literal
+   * text "undefined" and making hasDatabase() true with nothing configured.
+   */
+  const fallback =
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL_NON_POOLING ||
     process.env.DATABASE_URL_UNPOOLED;
+  if (fallback) process.env.POSTGRES_URL = fallback;
 }
 
 export function hasDatabase(): boolean {
