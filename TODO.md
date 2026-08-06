@@ -12,7 +12,7 @@
 - [x] Website editor — every heading, paragraph, address and image link on the site
 - [x] Switch to close bookings, with an editable notice in place of the form
 - [x] Editable list of appointment times
-- [x] Password-protected `/admin`, defaulting to `bigdog5` and overridable by env var
+- [x] Password-protected `/admin`, defaulting to `Elliott1999` and overridable by env var
 - [x] Runs without a database, with a banner in the admin saying nothing is being saved
 
 ## Up Next

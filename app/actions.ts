@@ -29,7 +29,7 @@ import { CONTENT_FIELDS, isContentKey, toLines } from './lib/content';
  * deployed site can be given a different one without touching the code.
  */
 function adminPassword(): string {
-  return process.env.ADMIN_PASSWORD || 'bigdog5';
+  return process.env.ADMIN_PASSWORD || 'Elliott1999';
 }
 
 export async function isAdmin(): Promise<boolean> {
