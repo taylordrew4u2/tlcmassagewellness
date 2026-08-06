@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { put } from '@vercel/blob';
 import {
   deleteBooking,
   deleteService,
@@ -395,5 +396,47 @@ export async function deleteTeamMemberAction(id: number): Promise<SaveState> {
   } catch (err) {
     console.error('Team delete failed:', err);
     return { error: 'Failed to remove them.' };
+  }
+}
+
+// ── Admin: photo uploads ───────────────────────────────────────────────────────
+
+export interface UploadState {
+  error?: string;
+  url?: string;
+}
+
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+/** Turns a picked file into a hosted image, so nobody needs a link for a photo. */
+export async function uploadImageAction(file: File): Promise<UploadState> {
+  if (!(await requireAdmin())) return { error: 'Unauthorized' };
+
+  if (!file || !(file instanceof File) || file.size === 0) {
+    return { error: 'Choose an image to upload.' };
+  }
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    return { error: 'Please choose a JPEG, PNG, WebP or GIF image.' };
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return { error: 'That image is larger than 8MB — please choose a smaller one.' };
+  }
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return {
+      error:
+        'Photo storage isn’t connected yet. Add Blob storage in the Vercel project’s Storage tab, then redeploy.',
+    };
+  }
+
+  try {
+    const blob = await put(file.name, file, {
+      access: 'public',
+      addRandomSuffix: true,
+    });
+    return { url: blob.url };
+  } catch (err) {
+    console.error('Image upload failed:', err);
+    return { error: 'Failed to upload the image. Please try again.' };
   }
 }

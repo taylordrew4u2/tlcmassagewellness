@@ -14,11 +14,11 @@
 - [x] Editable list of appointment times
 - [x] Password-protected `/admin`, defaulting to `Elliott1999` and overridable by env var
 - [x] Runs without a database, with a banner in the admin saying nothing is being saved
+- [x] Upload photos from the admin instead of pasting image links
 
 ## Up Next
 - [ ] Block dates and times that are already taken, instead of showing every slot
 - [ ] Email the visitor a confirmation automatically when a booking is accepted
-- [ ] Upload photos from the admin instead of pasting image links
 - [ ] Opening hours drive the times offered, rather than a separate list
 
 ## Ideas / Future

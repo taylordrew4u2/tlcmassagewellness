@@ -41,7 +41,7 @@ export default async function HomePage() {
             <img
               src={heroImage}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              className="animate-drift absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-green-deep/45" />
           </>
@@ -82,7 +82,7 @@ export default async function HomePage() {
             ) : null}
             <a
               href="#book"
-              className="mt-12 inline-block rounded-full border border-gold-soft px-12 py-4 text-[11px] font-light uppercase tracking-[0.32em] text-cream transition-colors hover:bg-gold-soft hover:text-green-deep"
+              className="mt-12 inline-block rounded-full border border-gold-soft px-12 py-4 text-[11px] font-light uppercase tracking-[0.32em] text-cream transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold-soft hover:text-green-deep hover:shadow-lg hover:shadow-green-deep/20"
             >
               {content.hero_cta_label}
             </a>
@@ -155,7 +155,7 @@ export default async function HomePage() {
                 <img
                   src={aboutImage}
                   alt=""
-                  className="h-full w-full object-cover"
+                  className="animate-drift h-full w-full object-cover"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-green-wash">
@@ -206,7 +206,7 @@ export default async function HomePage() {
             <div className="mt-16 grid gap-px bg-green-wash sm:grid-cols-2 lg:grid-cols-3">
               {services.map((service, i) => (
                 <Reveal key={service.id} delay={(i % 3) * 90}>
-                  <article className="flex h-full flex-col bg-cream p-8 sm:p-10">
+                  <article className="group flex h-full flex-col bg-cream p-8 transition-colors duration-300 hover:bg-white sm:p-10">
                     <h3 className="font-serif text-2xl font-light text-green-deep">
                       {service.name}
                     </h3>
@@ -224,9 +224,12 @@ export default async function HomePage() {
                     )}
                     <Link
                       href={`/book?treatment=${encodeURIComponent(service.name)}`}
-                      className="mt-8 self-start border-b border-gold pb-1 text-[11px] font-light uppercase tracking-[0.24em] text-green-deep transition-colors hover:text-gold-deep"
+                      className="mt-8 inline-flex select-none items-center gap-2 self-start border-b border-gold pb-1 text-[11px] font-light uppercase tracking-[0.24em] text-green-deep transition-colors hover:text-gold-deep"
                     >
                       Book this
+                      <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
+                        →
+                      </span>
                     </Link>
                   </article>
                 </Reveal>
