@@ -41,6 +41,7 @@ export default async function HomePage() {
             <img
               src={heroImage}
               alt=""
+              fetchPriority="high"
               className="animate-drift absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-green-deep/45" />
@@ -155,6 +156,8 @@ export default async function HomePage() {
                 <img
                   src={aboutImage}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className="animate-drift h-full w-full object-cover"
                 />
               ) : (
@@ -280,6 +283,8 @@ export default async function HomePage() {
                         <img
                           src={photo}
                           alt={member.name}
+                          loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-cover"
                         />
                       ) : (
