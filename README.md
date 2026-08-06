@@ -29,7 +29,7 @@ treatment already chosen.
 
 ### The admin (`/admin`)
 
-Sign in with the password (default `bigdog5` — see [Environment variables](#4-environment-variables)).
+Sign in with the password (default `Elliott1999` — see [Environment variables](#4-environment-variables)).
 
 | Tab | What you can do |
 |---|---|
@@ -81,7 +81,7 @@ Project → **Settings** → **Environment Variables**:
 
 | Variable | Required | Description |
 |---|---|---|
-| `ADMIN_PASSWORD` | Recommended | The `/admin` password. **Defaults to `bigdog5`** if unset — set your own before the site goes live. |
+| `ADMIN_PASSWORD` | Recommended | The `/admin` password. **Defaults to `Elliott1999`** if unset — set your own before the site goes live. |
 | `POSTGRES_URL` | Yes, for saving | Added automatically by the Storage step above. |
 
 ### Step 5 — Redeploy
@@ -99,7 +99,7 @@ npm run dev
 ```
 
 - Website: http://localhost:3000
-- Admin: http://localhost:3000/admin (password `bigdog5`)
+- Admin: http://localhost:3000/admin (password `Elliott1999`)
 
 Without a database the app keeps everything in memory, so it runs and looks
 right but forgets on restart — the admin shows a banner saying so. To develop

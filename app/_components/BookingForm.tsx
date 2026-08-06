@@ -147,7 +147,7 @@ export default function BookingForm({
           </select>
           {chosen?.duration ? (
             <p className="mt-2 text-xs font-light text-ink-soft">
-              {chosen.duration} · complimentary
+              {chosen.duration}
             </p>
           ) : null}
         </div>
