@@ -143,9 +143,9 @@ const SEED_SERVICES: ServiceInput[] = [
 
 const SEED_TEAM: TeamMemberInput[] = [
   {
-    name: 'Add your therapists',
+    name: 'Add yourself here',
     role: 'Edit this from the admin',
-    bio: 'Sign in at /admin, open the Team tab, and replace this with the people who actually work here. You can add a photo by uploading one.',
+    bio: 'Sign in at /admin, open the Team tab, and replace this with your own name, photo and bio. Working solo? Remove this instead and the "Our team" section disappears from the site.',
     photo_url: '',
     sort_order: 1,
     is_active: true,

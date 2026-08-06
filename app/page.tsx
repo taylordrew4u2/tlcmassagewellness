@@ -237,7 +237,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <p className="mt-16 text-center text-sm font-light text-ink-soft">
-              Our treatment list is being updated. Please check back shortly.
+              The treatment list is being updated. Please check back shortly.
             </p>
           )}
 
