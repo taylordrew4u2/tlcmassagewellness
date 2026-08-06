@@ -23,10 +23,16 @@ import {
  * project connected the current way would silently stay in memory-only mode.
  */
 if (!process.env.POSTGRES_URL) {
-  process.env.POSTGRES_URL =
+  /*
+   * Assigning `undefined` here would still set POSTGRES_URL, since Node
+   * coerces every process.env value to a string — leaving it as the literal
+   * text "undefined" and making hasDatabase() true with nothing configured.
+   */
+  const fallback =
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL_NON_POOLING ||
     process.env.DATABASE_URL_UNPOOLED;
+  if (fallback) process.env.POSTGRES_URL = fallback;
 }
 
 export function hasDatabase(): boolean {
@@ -137,9 +143,9 @@ const SEED_SERVICES: ServiceInput[] = [
 
 const SEED_TEAM: TeamMemberInput[] = [
   {
-    name: 'Add your therapists',
+    name: 'Add yourself here',
     role: 'Edit this from the admin',
-    bio: 'Sign in at /admin, open the Team tab, and replace this with the people who actually work here. You can add a photo by uploading one.',
+    bio: 'Sign in at /admin, open the Team tab, and replace this with your own name, photo and bio. Working solo? Remove this instead and the "Our team" section disappears from the site.',
     photo_url: '',
     sort_order: 1,
     is_active: true,

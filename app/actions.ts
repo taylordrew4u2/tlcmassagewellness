@@ -99,7 +99,7 @@ export async function requestBooking(
 ): Promise<BookingState> {
   const content = await getContent();
   if (content.bookings_open !== 'true') {
-    return { error: 'We are not taking bookings at the moment.' };
+    return { error: 'I am not taking bookings at the moment.' };
   }
 
   const name = ((formData.get('name') as string) ?? '').trim().slice(0, 120);
@@ -170,7 +170,7 @@ export async function requestBooking(
     return { success: true, refId: id };
   } catch (err) {
     console.error('Booking insert failed:', err);
-    return { error: 'We couldn’t save your request. Please try again, or call us.' };
+    return { error: 'I couldn’t save your request. Please try again, or call me.' };
   }
 }
 

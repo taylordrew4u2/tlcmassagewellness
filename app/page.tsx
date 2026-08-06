@@ -30,7 +30,7 @@ export default async function HomePage() {
   const mapUrl = toHttpUrl(content.contact_map_url);
 
   return (
-    <SiteShell content={content}>
+    <SiteShell content={content} showTeam={team.length > 0}>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-24 flex min-h-[100svh] items-center overflow-hidden bg-green-deep">
         {heroImage ? (
@@ -237,7 +237,7 @@ export default async function HomePage() {
             </div>
           ) : (
             <p className="mt-16 text-center text-sm font-light text-ink-soft">
-              Our treatment list is being updated. Please check back shortly.
+              The treatment list is being updated. Please check back shortly.
             </p>
           )}
 

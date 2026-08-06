@@ -65,7 +65,7 @@ export default function BookingSection({
                     href={`mailto:${content.contact_email}`}
                     className="mt-8 inline-block rounded-full border border-gold px-8 py-3 text-[11px] font-light uppercase tracking-[0.28em] text-gold-deep transition-colors hover:bg-gold hover:text-cream"
                   >
-                    Email us
+                    Email me
                   </a>
                 ) : null}
               </div>

@@ -56,7 +56,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         label: 'Search-engine description',
         type: 'text',
         default:
-          'Massage and wellness treatments. Book a visit with TLC Massage Wellness and let us take care of the rest.',
+          'Massage and wellness treatments. Book a visit with TLC Massage Wellness and let me take care of the rest.',
       },
       {
         key: 'announcement',
@@ -138,7 +138,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         type: 'lines',
         help: 'One per line. They appear as a short list beside the text.',
         default:
-          'Qualified, insured therapists\nUnhurried, personal attention\nQuiet, private treatment rooms\nStep-free access throughout',
+          'Qualified, insured therapist\nUnhurried, personal attention\nQuiet, private treatment room\nStep-free access throughout',
       },
       {
         key: 'about_image_url',
@@ -171,13 +171,13 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         label: 'Intro text',
         type: 'textarea',
         default:
-          'Choose the one that sounds like what your body is asking for — or tell us on the booking form and we will help you decide.',
+          'Choose the one that sounds like what your body is asking for — or tell me on the booking form and I will help you decide.',
       },
       {
         key: 'services_note',
         label: 'Note under the list',
         type: 'text',
-        default: 'Get in touch and we will help you find the right treatment.',
+        default: 'Get in touch and I will help you find the right treatment.',
       },
     ],
   },
@@ -202,7 +202,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         key: 'team_intro',
         label: 'Intro text',
         type: 'textarea',
-        default: 'A small team, so you will usually see the same face each visit.',
+        default: 'You will always see the same familiar face.',
       },
     ],
   },
@@ -235,7 +235,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         label: 'Intro text',
         type: 'textarea',
         default:
-          'Tell us when suits you and we will confirm by email. Requests are not booked in until we reply.',
+          'Tell me when suits you and I will confirm by email. Requests are not booked in until I reply.',
       },
       {
         key: 'booking_slots',
@@ -251,14 +251,14 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         type: 'textarea',
         help: 'Shown once a request has been sent.',
         default:
-          'Thank you — your request is with us. We will email you to confirm your appointment within one working day.',
+          'Thank you — your request is with me. I will email you to confirm your appointment within one working day.',
       },
       {
         key: 'booking_closed_message',
         label: 'Message when bookings are off',
         type: 'textarea',
         default:
-          'Our books are closed for the moment. Please check back soon, or get in touch and we will let you know as soon as they reopen.',
+          'My books are closed for the moment. Please check back soon, or get in touch and I will let you know as soon as they reopen.',
       },
     ],
   },
@@ -277,7 +277,7 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         key: 'contact_title',
         label: 'Heading',
         type: 'text',
-        default: 'Come and see us',
+        default: 'Come and see me',
       },
       {
         key: 'contact_address',

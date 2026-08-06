@@ -190,7 +190,7 @@ export default function BookingForm({
 
       <div>
         <label className={label} htmlFor="booking-notes">
-          Anything we should know?{' '}
+          Anything I should know?{' '}
           <span className="normal-case tracking-normal text-ink-soft/70">(optional)</span>
         </label>
         <textarea
@@ -199,7 +199,7 @@ export default function BookingForm({
           rows={3}
           maxLength={1000}
           className={`${field} resize-y`}
-          placeholder="Injuries, pregnancy, allergies, or anything you'd like us to take account of."
+          placeholder="Injuries, pregnancy, allergies, or anything you'd like me to take account of."
         />
       </div>
 
