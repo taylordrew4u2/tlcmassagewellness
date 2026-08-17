@@ -19,7 +19,8 @@ A single scrolling page in the brand's green and gold:
 - **Hero** — heading, sub-heading, button label and background photo, all editable
 - **About us** — paragraphs, a list of highlights, and a photo
 - **Our offer** — the treatment list, each with a "Book this" link
-- **Our team** — therapist profiles with photos
+- **Our team** — therapist profiles with photos; optional, so a solo practitioner
+  can leave it off and the section (and its nav link) disappears entirely
 - **Book a visit** — the request form
 - **Contact** — address, opening hours, phone, email, directions link
 - **Footer** — social links and a staff login link
@@ -130,6 +131,7 @@ app/
 ├── page.tsx                  The public site
 ├── globals.css               Palette and shared styles
 ├── icon.svg                  Favicon
+├── apple-icon.png            Home-screen icon for "Add to Home Screen" on iOS
 ├── actions.ts                Server Actions — booking, login, every admin write
 ├── book/page.tsx             The booking form on its own page
 ├── lib/
@@ -169,6 +171,12 @@ The palette comes from the logo and nothing else: the deep forest green of the
 lettering (`#2f3b2a`), the antique gold of the butterflies (`#a89240`), and the
 warm cream behind them (`#f7f3e8`). Headings are set in Cormorant Garamond and
 everything else in Jost, both self-hosted at build time by `next/font`.
+
+The layout is built mobile-first — most visitors will be on a phone. The hero
+photo loads first and the rest of the page's images load as they scroll into
+view, so the site stays quick on a mobile connection. A visitor can also add
+the site to their phone's home screen, where it shows the butterfly mark as
+its icon.
 
 ---
 
