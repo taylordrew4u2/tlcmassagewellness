@@ -27,7 +27,202 @@ const BLANK: Draft = {
   is_active: true,
 };
 
-export default function TeamPanel({ team: initial }: { team: TeamMember[] }) {
+export default function TeamPanel({
+  team,
+  soloMode,
+  onModeChange,
+}: {
+  team: TeamMember[];
+  soloMode: boolean;
+  onModeChange: (mode: 'team' | 'solo') => void;
+}) {
+  return (
+    <div>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2 className={sectionTitle}>Team</h2>
+          <p className="mt-1 max-w-lg text-sm font-light text-ink-soft">
+            {soloMode
+              ? 'Your own profile — name, photo and bio. Working with others too?'
+              : 'The therapists shown under “Our team”. Hide the section entirely by unticking everyone.'}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => onModeChange('solo')}
+            aria-pressed={soloMode}
+            className={`rounded-full border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
+              soloMode
+                ? 'border-green-deep bg-green-deep text-cream'
+                : 'border-green-wash text-green-deep hover:border-gold'
+            }`}
+          >
+            Just me
+          </button>
+          <button
+            type="button"
+            onClick={() => onModeChange('team')}
+            aria-pressed={!soloMode}
+            className={`rounded-full border px-4 py-2 text-[11px] font-light uppercase tracking-[0.16em] transition-colors ${
+              !soloMode
+                ? 'border-green-deep bg-green-deep text-cream'
+                : 'border-green-wash text-green-deep hover:border-gold'
+            }`}
+          >
+            Team
+          </button>
+        </div>
+      </div>
+
+      {soloMode ? (
+        <SoloProfile team={team} />
+      ) : (
+        <TeamList team={team} />
+      )}
+    </div>
+  );
+}
+
+/** One profile, always on screen and always saving to the first team row —
+ *  there is nothing to add or list when it's just one person. */
+function SoloProfile({ team }: { team: TeamMember[] }) {
+  const existing = team[0] ?? null;
+  const [draft, setDraft] = useState<Draft>(
+    existing ? { ...existing } : { ...BLANK, is_active: true },
+  );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const extra = team.length - (existing ? 1 : 0);
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    setSaved(false);
+
+    const data = new FormData();
+    if (draft.id !== null) data.set('id', String(draft.id));
+    data.set('name', draft.name);
+    data.set('role', draft.role);
+    data.set('bio', draft.bio);
+    data.set('photo_url', draft.photo_url);
+    data.set('sort_order', String(draft.sort_order));
+    data.set('is_active', 'true');
+
+    const result = await saveTeamMemberAction({}, data);
+    setSaving(false);
+
+    if (result.error || result.savedId === undefined) {
+      setError(result.error ?? 'Failed to save.');
+      return;
+    }
+
+    setDraft((d) => ({ ...d, id: result.savedId ?? d.id }));
+    setSaved(true);
+  }
+
+  return (
+    <div className="mt-8 rounded-sm border border-green-wash bg-white p-5 sm:p-6">
+      {extra > 0 ? (
+        <p className="mb-6 border-l-2 border-gold bg-gold-wash/50 px-4 py-3 text-sm font-light text-green-deep">
+          You also have {extra} other {extra === 1 ? 'person' : 'people'} listed
+          from before. They stay saved but hidden while it’s just you — switch
+          to Team mode to manage them.
+        </p>
+      ) : null}
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <label className={fieldLabel} htmlFor="solo-name">
+            What would you like to be called?
+          </label>
+          <input
+            id="solo-name"
+            type="text"
+            value={draft.name}
+            maxLength={120}
+            onChange={(e) => {
+              setDraft({ ...draft, name: e.target.value });
+              setSaved(false);
+            }}
+            className={`mt-2 ${field}`}
+            placeholder="Sarah, or Sarah Chen"
+          />
+          <p className={help}>
+            Your name, or however you’d like to be addressed on the site.
+          </p>
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className={fieldLabel} htmlFor="solo-role">
+            Title <span className="normal-case tracking-normal text-ink-soft/70">(optional)</span>
+          </label>
+          <input
+            id="solo-role"
+            type="text"
+            value={draft.role}
+            maxLength={120}
+            onChange={(e) => {
+              setDraft({ ...draft, role: e.target.value });
+              setSaved(false);
+            }}
+            className={`mt-2 ${field}`}
+            placeholder="Massage Therapist"
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className={fieldLabel} htmlFor="solo-bio">
+            Short bio
+          </label>
+          <textarea
+            id="solo-bio"
+            rows={3}
+            value={draft.bio}
+            maxLength={1000}
+            onChange={(e) => {
+              setDraft({ ...draft, bio: e.target.value });
+              setSaved(false);
+            }}
+            className={`mt-2 ${field} resize-y`}
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <ImageUploadField
+            id="solo-photo"
+            label="Photo"
+            help="Leave empty and your initial is shown instead."
+            value={draft.photo_url}
+            onChange={(url) => {
+              setDraft({ ...draft, photo_url: url });
+              setSaved(false);
+            }}
+            rounded
+          />
+        </div>
+      </div>
+
+      {error ? (
+        <p role="alert" className="mt-4 text-sm font-light text-red-700">
+          {error}
+        </p>
+      ) : null}
+
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <button type="button" onClick={save} disabled={saving} className={primaryButton}>
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+        {saved ? (
+          <span className="text-sm font-light text-green-mid">Saved.</span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function TeamList({ team: initial }: { team: TeamMember[] }) {
   const [team, setTeam] = useState(initial);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -90,14 +285,7 @@ export default function TeamPanel({ team: initial }: { team: TeamMember[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className={sectionTitle}>Team</h2>
-          <p className="mt-1 max-w-lg text-sm font-light text-ink-soft">
-            The therapists shown under “Our team”. Hide the section entirely by
-            unticking everyone.
-          </p>
-        </div>
+      <div className="mt-6 flex justify-end">
         <button type="button" onClick={add} className={primaryButton}>
           Add someone
         </button>

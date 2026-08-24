@@ -6,19 +6,25 @@ import { revalidatePath } from 'next/cache';
 import { put } from '@vercel/blob';
 import {
   deleteBooking,
+  deleteIntakeQuestion,
   deleteService,
   deleteTeamMember,
+  getIntakeQuestions,
   getServices,
   insertBooking,
+  insertIntakeQuestion,
   insertService,
   insertTeamMember,
   isBookingStatus,
+  isIntakeQuestionType,
   setBookingNotes,
   setBookingStatus,
   setContent,
+  updateIntakeQuestion,
   updateService,
   updateTeamMember,
   type BookingStatus,
+  type IntakeAnswer,
 } from './lib/db';
 import { getContent } from './lib/db';
 import { CONTENT_FIELDS, isContentKey, toLines } from './lib/content';
@@ -130,6 +136,25 @@ export async function requestBooking(
   if (!preferred_date) missing.push('a date');
   if (!preferred_time) missing.push('a time');
 
+  /*
+   * Re-read from the current question list rather than trusted from the
+   * form, same reasoning as the treatment and time above — a question added
+   * or made required after the page loaded still gets enforced.
+   */
+  const answers: IntakeAnswer[] = [];
+  if (content.intake_enabled === 'true') {
+    const questions = (await getIntakeQuestions()).filter((q) => q.is_active);
+    for (const q of questions) {
+      const raw = ((formData.get(`intake_${q.id}`) as string) ?? '').trim().slice(0, 1000);
+      if (q.required && !raw) {
+        missing.push(q.label);
+        continue;
+      }
+      if (raw) answers.push({ label: q.label, answer: raw });
+    }
+  }
+  const intake_answers = answers.length ? JSON.stringify(answers) : null;
+
   if (missing.length) {
     return {
       error: `Please add ${
@@ -165,6 +190,7 @@ export async function requestBooking(
       preferred_date,
       preferred_time,
       notes,
+      intake_answers,
     });
     revalidatePath('/admin');
     return { success: true, refId: id };
@@ -402,6 +428,60 @@ export async function deleteTeamMemberAction(id: number): Promise<SaveState> {
   } catch (err) {
     console.error('Team delete failed:', err);
     return { error: 'Failed to remove them.' };
+  }
+}
+
+// ── Admin: intake questions ────────────────────────────────────────────────────
+
+export async function saveIntakeQuestionAction(
+  prevState: SaveState,
+  formData: FormData,
+): Promise<SaveState> {
+  if (!(await requireAdmin())) return { error: 'Unauthorized' };
+
+  const rawId = ((formData.get('id') as string) ?? '').trim();
+  const id = rawId ? parseInt(rawId, 10) : null;
+  if (rawId && !Number.isInteger(id)) return { error: 'That question no longer exists.' };
+
+  const rawType = (formData.get('type') as string) ?? '';
+  const data = {
+    label: ((formData.get('label') as string) ?? '').trim().slice(0, 300),
+    type: isIntakeQuestionType(rawType) ? rawType : ('short' as const),
+    required: formData.get('required') === 'true',
+    sort_order: readOrder(formData),
+    is_active: formData.get('is_active') === 'true',
+  };
+
+  if (!data.label) return { error: 'Give the question some wording.' };
+
+  try {
+    if (id) {
+      const updated = await updateIntakeQuestion(id, data);
+      if (!updated) return { error: 'That question no longer exists.' };
+      revalidateSite();
+      return { success: true, savedId: id };
+    }
+    const newId = await insertIntakeQuestion(data);
+    revalidateSite();
+    return { success: true, savedId: newId };
+  } catch (err) {
+    console.error('Intake question save failed:', err);
+    return { error: 'Failed to save the question.' };
+  }
+}
+
+export async function deleteIntakeQuestionAction(id: number): Promise<SaveState> {
+  if (!(await requireAdmin())) return { error: 'Unauthorized' };
+  if (!Number.isInteger(id)) return { error: 'Missing question id.' };
+
+  try {
+    const removed = await deleteIntakeQuestion(id);
+    if (!removed) return { error: 'That question no longer exists.' };
+    revalidateSite();
+    return { success: true };
+  } catch (err) {
+    console.error('Intake question delete failed:', err);
+    return { error: 'Failed to delete the question.' };
   }
 }
 

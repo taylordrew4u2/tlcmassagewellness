@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { saveContentAction } from '../actions';
 import { CONTENT_GROUPS, type SiteContent } from '../lib/content';
-import type { Service, TeamMember } from '../lib/db';
+import type { IntakeQuestion, Service, TeamMember } from '../lib/db';
 import ContentFieldInput from './ContentField';
+import IntakePanel from './IntakePanel';
 import ServicesPanel from './ServicesPanel';
 import TeamPanel from './TeamPanel';
 import { ghostButton, primaryButton } from './ui';
@@ -16,13 +17,13 @@ const STORAGE_KEY = 'tlc_admin_help_button_hidden';
 
 /**
  * The order the guide walks through. `group` steps edit real content fields
- * in place; `panel` steps embed the real Treatments/Team editors, so adding
- * one there is exactly the same as adding one from its own tab.
+ * in place; `panel` steps embed the real Treatments/Team/Intake editors, so
+ * adding one there is exactly the same as adding one from its own tab.
  */
 const STEPS: (
   | { kind: 'info'; id: 'welcome' | 'bookings' | 'wrapup' }
   | { kind: 'group'; groupId: string }
-  | { kind: 'panel'; id: 'treatments' | 'team' }
+  | { kind: 'panel'; id: 'treatments' | 'team' | 'intake' }
 )[] = [
   { kind: 'info', id: 'welcome' },
   { kind: 'group', groupId: 'brand' },
@@ -33,11 +34,19 @@ const STEPS: (
   { kind: 'group', groupId: 'team' },
   { kind: 'panel', id: 'team' },
   { kind: 'group', groupId: 'booking' },
+  { kind: 'group', groupId: 'intake' },
+  { kind: 'panel', id: 'intake' },
   { kind: 'group', groupId: 'contact' },
   { kind: 'group', groupId: 'footer' },
   { kind: 'info', id: 'bookings' },
   { kind: 'info', id: 'wrapup' },
 ];
+
+const PANEL_TITLES: Record<'treatments' | 'team' | 'intake', string> = {
+  treatments: 'Add your treatments',
+  team: 'Add your team',
+  intake: 'Add your intake questions',
+};
 
 function groupById(id: string) {
   const group = CONTENT_GROUPS.find((g) => g.id === id);
@@ -50,7 +59,7 @@ function stepTitle(step: (typeof STEPS)[number]): string {
     case 'group':
       return groupById(step.groupId).title;
     case 'panel':
-      return step.id === 'treatments' ? 'Add your treatments' : 'Add your team';
+      return PANEL_TITLES[step.id];
     case 'info':
       if (step.id === 'welcome') return 'Let’s set up your website';
       if (step.id === 'bookings') return 'Bookings tab — requests as they arrive';
@@ -66,6 +75,9 @@ export default function HelpGuide({
   onFieldChange,
   services,
   team,
+  soloMode,
+  onModeChange,
+  intakeQuestions,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -74,6 +86,9 @@ export default function HelpGuide({
   onFieldChange: (key: string, value: string) => void;
   services: Service[];
   team: TeamMember[];
+  soloMode: boolean;
+  onModeChange: (mode: 'team' | 'solo') => void;
+  intakeQuestions: IntakeQuestion[];
 }) {
   /* null until the effect below reads localStorage, so the button never
      flashes on screen for someone who already hid it. */
@@ -207,6 +222,9 @@ export default function HelpGuide({
                 onFieldChange={onFieldChange}
                 services={services}
                 team={team}
+                soloMode={soloMode}
+                onModeChange={onModeChange}
+                intakeQuestions={intakeQuestions}
                 storageWarning={storageWarning}
               />
 
@@ -310,6 +328,9 @@ function StepBody({
   onFieldChange,
   services,
   team,
+  soloMode,
+  onModeChange,
+  intakeQuestions,
   storageWarning,
 }: {
   step: (typeof STEPS)[number];
@@ -317,6 +338,9 @@ function StepBody({
   onFieldChange: (key: string, value: string) => void;
   services: Service[];
   team: TeamMember[];
+  soloMode: boolean;
+  onModeChange: (mode: 'team' | 'solo') => void;
+  intakeQuestions: IntakeQuestion[];
   storageWarning: boolean;
 }) {
   if (step.kind === 'group') {
@@ -353,15 +377,29 @@ function StepBody({
         </div>
       );
     }
+    if (step.id === 'intake') {
+      return (
+        <div>
+          <p className="text-sm font-light leading-relaxed text-ink-soft">
+            Add your own questions below — turn the whole thing on for
+            visitors from the previous step. Skip this and the booking form
+            just asks the usual name, email, treatment, date and time.
+          </p>
+          <div className="mt-6">
+            <IntakePanel questions={intakeQuestions} />
+          </div>
+        </div>
+      );
+    }
     return (
       <div>
         <p className="text-sm font-light leading-relaxed text-ink-soft">
-          Add a profile for yourself, or for anyone else who works with you.
-          Working alone? Leave the list empty and the whole “Our team” section
-          — including its link in the site’s menu — disappears on its own.
+          {soloMode
+            ? 'Your profile — however you’d like to be addressed, plus a photo and bio. Working with others too? Switch to Team above.'
+            : 'Add a profile for anyone who works with you. Just you after all? Switch to “Just me” above and the multi-person list gets out of your way.'}
         </p>
         <div className="mt-6">
-          <TeamPanel team={team} />
+          <TeamPanel team={team} soloMode={soloMode} onModeChange={onModeChange} />
         </div>
       </div>
     );
@@ -407,6 +445,10 @@ function StepBody({
             <strong className="font-normal text-ink">Email them</strong> opens
             your own mail app with a reply already written — no email is sent
             from this dashboard directly.
+          </li>
+          <li>
+            If you turned on intake questions, each visitor’s answers show up
+            on their request, right alongside their name and treatment.
           </li>
         </ul>
       </div>

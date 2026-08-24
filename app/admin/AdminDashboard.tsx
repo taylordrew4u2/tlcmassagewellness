@@ -1,22 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { adminLogout } from '../actions';
+import { adminLogout, saveContentAction } from '../actions';
 import type { SiteContent } from '../lib/content';
-import type { Booking, Service, TeamMember } from '../lib/db';
+import type { Booking, IntakeQuestion, Service, TeamMember } from '../lib/db';
 import Logo from '../_components/Logo';
 import BookingsPanel from './BookingsPanel';
 import ContentPanel from './ContentPanel';
 import HelpGuide from './HelpGuide';
+import IntakePanel from './IntakePanel';
 import ServicesPanel from './ServicesPanel';
 import TeamPanel from './TeamPanel';
 
-type Tab = 'bookings' | 'treatments' | 'team' | 'content';
+type Tab = 'bookings' | 'treatments' | 'team' | 'intake' | 'content';
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'bookings', label: 'Bookings' },
   { key: 'treatments', label: 'Treatments' },
   { key: 'team', label: 'Team' },
+  { key: 'intake', label: 'Intake form' },
   { key: 'content', label: 'Website' },
 ];
 
@@ -25,12 +27,14 @@ export default function AdminDashboard({
   bookings,
   services,
   team,
+  intakeQuestions,
   storageWarning,
 }: {
   content: SiteContent;
   bookings: Booking[];
   services: Service[];
   team: TeamMember[];
+  intakeQuestions: IntakeQuestion[];
   /** Set when there is no database, so nothing saved here survives a restart. */
   storageWarning: boolean;
 }) {
@@ -41,6 +45,17 @@ export default function AdminDashboard({
      original snapshot. */
   const [content, setContent] = useState(initialContent);
   const waiting = bookings.filter((b) => b.status === 'pending').length;
+  const soloMode = content.practice_mode !== 'true';
+
+  /* A standalone setting rather than part of a longer form, so it saves the
+     moment it's clicked instead of waiting on a separate Save button. */
+  async function handleModeChange(mode: 'team' | 'solo') {
+    const value = mode === 'team' ? 'true' : 'false';
+    setContent((c) => ({ ...c, practice_mode: value }));
+    const formData = new FormData();
+    formData.set('practice_mode', value);
+    await saveContentAction({}, formData);
+  }
 
   return (
     <div className="min-h-screen bg-cream">
@@ -130,7 +145,10 @@ export default function AdminDashboard({
           <BookingsPanel bookings={bookings} businessName={content.brand_name} />
         ) : null}
         {tab === 'treatments' ? <ServicesPanel services={services} /> : null}
-        {tab === 'team' ? <TeamPanel team={team} /> : null}
+        {tab === 'team' ? (
+          <TeamPanel team={team} soloMode={soloMode} onModeChange={handleModeChange} />
+        ) : null}
+        {tab === 'intake' ? <IntakePanel questions={intakeQuestions} /> : null}
         {tab === 'content' ? <ContentPanel content={content} onSaved={setContent} /> : null}
       </main>
 
@@ -142,6 +160,9 @@ export default function AdminDashboard({
         onFieldChange={(key, value) => setContent((c) => ({ ...c, [key]: value }))}
         services={services}
         team={team}
+        soloMode={soloMode}
+        onModeChange={handleModeChange}
+        intakeQuestions={intakeQuestions}
       />
     </div>
   );
