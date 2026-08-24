@@ -7,6 +7,7 @@ import type { Booking, Service, TeamMember } from '../lib/db';
 import Logo from '../_components/Logo';
 import BookingsPanel from './BookingsPanel';
 import ContentPanel from './ContentPanel';
+import HelpGuide from './HelpGuide';
 import ServicesPanel from './ServicesPanel';
 import TeamPanel from './TeamPanel';
 
@@ -20,7 +21,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 export default function AdminDashboard({
-  content,
+  content: initialContent,
   bookings,
   services,
   team,
@@ -34,6 +35,11 @@ export default function AdminDashboard({
   storageWarning: boolean;
 }) {
   const [tab, setTab] = useState<Tab>('bookings');
+  const [helpOpen, setHelpOpen] = useState(false);
+  /* Lifted out of ContentPanel so it and the setup guide — two places that
+     edit the same fields — always show each other's saves, not the page's
+     original snapshot. */
+  const [content, setContent] = useState(initialContent);
   const waiting = bookings.filter((b) => b.status === 'pending').length;
 
   return (
@@ -57,6 +63,13 @@ export default function AdminDashboard({
           </div>
 
           <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setHelpOpen(true)}
+              className="text-[11px] font-light uppercase tracking-[0.18em] text-ink-soft transition-colors hover:text-gold-deep"
+            >
+              Help
+            </button>
             <a
               href="/"
               target="_blank"
@@ -118,8 +131,18 @@ export default function AdminDashboard({
         ) : null}
         {tab === 'treatments' ? <ServicesPanel services={services} /> : null}
         {tab === 'team' ? <TeamPanel team={team} /> : null}
-        {tab === 'content' ? <ContentPanel content={content} /> : null}
+        {tab === 'content' ? <ContentPanel content={content} onSaved={setContent} /> : null}
       </main>
+
+      <HelpGuide
+        open={helpOpen}
+        onOpenChange={setHelpOpen}
+        storageWarning={storageWarning}
+        content={content}
+        onFieldChange={(key, value) => setContent((c) => ({ ...c, [key]: value }))}
+        services={services}
+        team={team}
+      />
     </div>
   );
 }

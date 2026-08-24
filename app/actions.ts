@@ -263,10 +263,16 @@ export async function saveContentAction(
   /*
    * Rebuilt from the known field list rather than from whatever was posted, so
    * an extra field in the request body can't write a key the site never reads.
-   * Toggles post nothing when off, hence the explicit false.
+   * A field missing from the submission is left untouched rather than reset —
+   * that's what lets a caller save one section of the content form without
+   * every other field needing to be present too. A toggle's own hidden input
+   * only exists in the DOM while its group is the one on screen, so treating
+   * "absent" as "off" would silently disable bookings on a save made from any
+   * other tab.
    */
   const updates: Record<string, string> = {};
   for (const field of CONTENT_FIELDS) {
+    if (!formData.has(field.key)) continue;
     if (field.type === 'toggle') {
       updates[field.key] = formData.get(field.key) === 'true' ? 'true' : 'false';
       continue;
