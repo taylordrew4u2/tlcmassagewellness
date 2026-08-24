@@ -15,6 +15,7 @@
 - [x] Password-protected `/admin`, defaulting to `Elliott1999` and overridable by env var
 - [x] Runs without a database, with a banner in the admin saying nothing is being saved
 - [x] Upload photos from the admin instead of pasting image links
+- [x] Step-by-step admin guide — a Help link plus a floating button, which can be turned off
 
 ## Up Next
 - [ ] Block dates and times that are already taken, instead of showing every slot

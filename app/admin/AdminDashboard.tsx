@@ -7,6 +7,7 @@ import type { Booking, Service, TeamMember } from '../lib/db';
 import Logo from '../_components/Logo';
 import BookingsPanel from './BookingsPanel';
 import ContentPanel from './ContentPanel';
+import HelpGuide from './HelpGuide';
 import ServicesPanel from './ServicesPanel';
 import TeamPanel from './TeamPanel';
 
@@ -34,6 +35,7 @@ export default function AdminDashboard({
   storageWarning: boolean;
 }) {
   const [tab, setTab] = useState<Tab>('bookings');
+  const [helpOpen, setHelpOpen] = useState(false);
   const waiting = bookings.filter((b) => b.status === 'pending').length;
 
   return (
@@ -57,6 +59,13 @@ export default function AdminDashboard({
           </div>
 
           <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => setHelpOpen(true)}
+              className="text-[11px] font-light uppercase tracking-[0.18em] text-ink-soft transition-colors hover:text-gold-deep"
+            >
+              Help
+            </button>
             <a
               href="/"
               target="_blank"
@@ -120,6 +129,8 @@ export default function AdminDashboard({
         {tab === 'team' ? <TeamPanel team={team} /> : null}
         {tab === 'content' ? <ContentPanel content={content} /> : null}
       </main>
+
+      <HelpGuide open={helpOpen} onOpenChange={setHelpOpen} storageWarning={storageWarning} />
     </div>
   );
 }

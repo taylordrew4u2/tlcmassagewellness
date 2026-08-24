@@ -39,6 +39,12 @@ Sign in with the password (default `Elliott1999` — see [Environment variables]
 | **Team** | Add, edit, reorder, hide, or delete therapists. Leave everyone hidden and the whole section disappears from the site. |
 | **Website** | Every heading, paragraph, label, address, opening hour and image link on the public site, grouped into eight sections. Also holds the switch that closes bookings, and the list of appointment times people can choose from. |
 
+A step-by-step guide to using the four tabs above is one click away from the
+**Help** link at the top of the page, and from a floating button in the
+corner of the screen. The floating button can be turned off from inside the
+guide — the **Help** link in the header always stays, so it's never out of
+reach.
+
 ### How a booking flows
 
 1. A visitor fills in the form: name, email, phone, treatment, date, time, notes.
@@ -154,6 +160,7 @@ app/
     ├── TeamPanel.tsx         Team editor
     ├── ContentPanel.tsx      Website copy editor
     ├── ImageUploadField.tsx  Photo upload widget, shared by the panels above
+    ├── HelpGuide.tsx         The step-by-step guide, Help link and floating button
     └── ui.ts                 Shared class strings
 ```
 
