@@ -39,11 +39,13 @@ Sign in with the password (default `Elliott1999` — see [Environment variables]
 | **Team** | Add, edit, reorder, hide, or delete therapists. Leave everyone hidden and the whole section disappears from the site. |
 | **Website** | Every heading, paragraph, label, address, opening hour and image link on the public site, grouped into eight sections. Also holds the switch that closes bookings, and the list of appointment times people can choose from. |
 
-A step-by-step guide to using the four tabs above is one click away from the
-**Help** link at the top of the page, and from a floating button in the
-corner of the screen. The floating button can be turned off from inside the
-guide — the **Help** link in the header always stays, so it's never out of
-reach.
+A guided setup walks through the site section by section — one click away
+from the **Help** link at the top of the page, and from a floating button in
+the corner of the screen. Each step explains what that part of the site is,
+with the real fields (or the real Treatments/Team editor) right there to
+fill in and save on the spot, or skip and come back to later from its own
+tab. The floating button can be turned off from inside the guide — the
+**Help** link in the header always stays, so it's never out of reach.
 
 ### How a booking flows
 
@@ -159,8 +161,9 @@ app/
     ├── ServicesPanel.tsx     Treatment editor
     ├── TeamPanel.tsx         Team editor
     ├── ContentPanel.tsx      Website copy editor
+    ├── ContentField.tsx      One content field, shared by ContentPanel and HelpGuide
     ├── ImageUploadField.tsx  Photo upload widget, shared by the panels above
-    ├── HelpGuide.tsx         The step-by-step guide, Help link and floating button
+    ├── HelpGuide.tsx         The guided setup, Help link and floating button
     └── ui.ts                 Shared class strings
 ```
 
