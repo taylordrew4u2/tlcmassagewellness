@@ -42,10 +42,9 @@ const STEPS: (
   { kind: 'info', id: 'wrapup' },
 ];
 
-const PANEL_TITLES: Record<'treatments' | 'team' | 'intake', string> = {
-  treatments: 'Add your treatments',
-  team: 'Add your team',
-  intake: 'Add your intake questions',
+const PANEL_TITLES: Record<'treatments' | 'intake', string> = {
+  treatments: 'Add what you offer',
+  intake: 'Ask your clients a few questions',
 };
 
 function groupById(id: string) {
@@ -54,16 +53,17 @@ function groupById(id: string) {
   return group;
 }
 
-function stepTitle(step: (typeof STEPS)[number]): string {
+function stepTitle(step: (typeof STEPS)[number], soloMode: boolean): string {
   switch (step.kind) {
     case 'group':
       return groupById(step.groupId).title;
     case 'panel':
+      if (step.id === 'team') return soloMode ? 'Tell us about you' : 'Add your team';
       return PANEL_TITLES[step.id];
     case 'info':
-      if (step.id === 'welcome') return 'Let’s set up your website';
-      if (step.id === 'bookings') return 'Bookings tab — requests as they arrive';
-      return 'That’s everything';
+      if (step.id === 'welcome') return 'Welcome — let’s set up your website';
+      if (step.id === 'bookings') return 'How booking requests reach you';
+      return 'All done for now';
   }
 }
 
@@ -192,13 +192,13 @@ export default function HelpGuide({
                   id="help-guide-title"
                   className="mt-2 font-serif text-2xl font-light text-green-deep"
                 >
-                  {stepTitle(current)}
+                  {stepTitle(current, soloMode)}
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                aria-label="Close"
+                aria-label="Close this guide"
                 className="-mr-1 -mt-1 shrink-0 rounded-full p-2 text-ink-soft transition-colors hover:text-gold-deep"
               >
                 <svg
@@ -268,7 +268,7 @@ export default function HelpGuide({
                       disabled={saving}
                       className={ghostButton}
                     >
-                      Skip
+                      Skip for now
                     </button>
                   ) : null}
 
@@ -287,7 +287,7 @@ export default function HelpGuide({
                       disabled={saving}
                       className={primaryButton}
                     >
-                      {saving ? 'Saving…' : 'Save & continue'}
+                      {saving ? 'Saving…' : 'Save and continue'}
                     </button>
                   ) : (
                     <button
@@ -295,7 +295,7 @@ export default function HelpGuide({
                       onClick={() => goTo(step + 1)}
                       className={primaryButton}
                     >
-                      Next
+                      Continue
                     </button>
                   )}
                 </div>
@@ -310,7 +310,8 @@ export default function HelpGuide({
                     className="h-4 w-4 accent-[#3f5138]"
                   />
                   <span className="text-sm font-light text-ink">
-                    Show the floating help button on every page
+                    Keep a small Help button in the corner of every page, so
+                    you can open this guide again anytime
                   </span>
                 </label>
               ) : null}
@@ -347,7 +348,7 @@ function StepBody({
     const group = groupById(step.groupId);
     return (
       <div>
-        <p className="text-sm font-light leading-relaxed text-ink-soft">{group.description}</p>
+        <p className="text-base leading-relaxed text-ink-soft">{group.description}</p>
         <div className="mt-6 space-y-6">
           {group.fields.map((field) => (
             <ContentFieldInput
@@ -366,10 +367,15 @@ function StepBody({
     if (step.id === 'treatments') {
       return (
         <div>
-          <p className="text-sm font-light leading-relaxed text-ink-soft">
-            Add what you offer below — each one appears on the site and in the
-            booking form the moment you save it. Add as many as you like here,
-            or skip for now and come back to the Treatments tab later.
+          <p className="text-base leading-relaxed text-ink-soft">
+            This is where you list what you offer — for example, “Swedish
+            massage, 60 minutes.” Fill in one below and press{' '}
+            <strong className="font-normal text-ink">Save</strong>. It will
+            show up on your website and in the booking form right away. Add
+            as many as you like, or press{' '}
+            <strong className="font-normal text-ink">Skip for now</strong> and
+            come back to it later — this same list also lives on its own
+            Treatments tab.
           </p>
           <div className="mt-6">
             <ServicesPanel services={services} />
@@ -380,10 +386,14 @@ function StepBody({
     if (step.id === 'intake') {
       return (
         <div>
-          <p className="text-sm font-light leading-relaxed text-ink-soft">
-            Add your own questions below — turn the whole thing on for
-            visitors from the previous step. Skip this and the booking form
-            just asks the usual name, email, treatment, date and time.
+          <p className="text-base leading-relaxed text-ink-soft">
+            Is there anything you like to ask clients before they arrive —
+            for example, “Do you have any injuries I should know about?”
+            Type your questions in below, then turn them on for visitors on
+            the previous step. If you’d rather not ask anything extra, press{' '}
+            <strong className="font-normal text-ink">Skip for now</strong> —
+            the booking form will still ask for the everyday things: name,
+            email, treatment, date and time.
           </p>
           <div className="mt-6">
             <IntakePanel questions={intakeQuestions} />
@@ -393,10 +403,10 @@ function StepBody({
     }
     return (
       <div>
-        <p className="text-sm font-light leading-relaxed text-ink-soft">
+        <p className="text-base leading-relaxed text-ink-soft">
           {soloMode
-            ? 'Your profile — however you’d like to be addressed, plus a photo and bio. Working with others too? Switch to Team above.'
-            : 'Add a profile for anyone who works with you. Just you after all? Switch to “Just me” above and the multi-person list gets out of your way.'}
+            ? 'This is your own profile — your name (or however you’d like to be called), a photo, and a short bio about yourself. If you actually work alongside other people, press “Team” above to switch.'
+            : 'Add a short profile for everyone who works with you: a name, a photo, and a bio. If it’s really just you, press “Just me” above and this list will get out of your way.'}
         </p>
         <div className="mt-6">
           <TeamPanel team={team} soloMode={soloMode} onModeChange={onModeChange} />
@@ -408,47 +418,66 @@ function StepBody({
   // info steps
   if (step.id === 'welcome') {
     return (
-      <div className="space-y-3 text-sm font-light leading-relaxed text-ink-soft">
+      <div className="space-y-4 text-base leading-relaxed text-ink-soft">
         <p>
-          This guide walks through everything a visitor sees on your site,
-          section by section. At each step you can fill it in right here and
-          save it, or skip it and come back later from the tab it belongs to
-          — nothing here is required to move on.
+          This guide will walk you through your whole website, one small,
+          simple step at a time. You don’t need to know anything about
+          computers for this — just read what each step asks, and type your
+          answer the same way you would fill in a paper form.
         </p>
-        <p>Let’s get started.</p>
+        <p>At every step you have two choices:</p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            <strong className="font-normal text-ink">Save and continue</strong>{' '}
+            — saves what you typed and moves on to the next step.
+          </li>
+          <li>
+            <strong className="font-normal text-ink">Skip for now</strong> —
+            leaves that part as it is. You can always come back to it later,
+            using the tabs across the top of this page.
+          </li>
+        </ul>
+        <p>
+          There is nothing here you can break. If you ever change your mind,
+          just come back and edit it again — take all the time you need.
+        </p>
       </div>
     );
   }
 
   if (step.id === 'bookings') {
     return (
-      <div className="space-y-3 text-sm font-light leading-relaxed text-ink-soft">
+      <div className="space-y-4 text-base leading-relaxed text-ink-soft">
         <p>
-          One tab this guide can’t fill in for you: the{' '}
-          <strong className="font-normal text-ink">Bookings</strong> tab, where
-          requests from visitors land as they arrive — there’s nothing to set
-          up ahead of time, but it’s worth knowing how it works.
+          There’s one tab this guide can’t fill in for you ahead of time: the{' '}
+          <strong className="font-normal text-ink">Bookings</strong> tab. This
+          is where requests from clients show up as they come in. There’s
+          nothing to set up now, but here’s how it works when the time comes.
         </p>
         <ul className="list-disc space-y-2 pl-5">
           <li>
-            Every request lands as{' '}
+            Every new request appears marked{' '}
             <strong className="font-normal text-ink">awaiting answer</strong>,
-            and the tab shows a count of anything still waiting.
+            and a number on the Bookings tab tells you how many are waiting
+            for you.
           </li>
           <li>
-            <strong className="font-normal text-ink">Accept</strong> or{' '}
-            <strong className="font-normal text-ink">Decline</strong> a request
-            in one tap. Accepted ones can later be marked{' '}
-            <strong className="font-normal text-ink">done</strong>, or reopened.
+            Press <strong className="font-normal text-ink">Accept</strong> or{' '}
+            <strong className="font-normal text-ink">Decline</strong> to
+            answer it. Afterwards you can mark an accepted one{' '}
+            <strong className="font-normal text-ink">done</strong>, or change
+            your mind and reopen it.
           </li>
           <li>
+            Pressing{' '}
             <strong className="font-normal text-ink">Email them</strong> opens
-            your own mail app with a reply already written — no email is sent
-            from this dashboard directly.
+            your own email program with a reply already written for you to
+            check and send — this website never sends anything on its own.
           </li>
           <li>
-            If you turned on intake questions, each visitor’s answers show up
-            on their request, right alongside their name and treatment.
+            If you turned on your own questions earlier, each client’s
+            answers will appear on their request too, right next to their
+            name.
           </li>
         </ul>
       </div>
@@ -456,18 +485,22 @@ function StepBody({
   }
 
   return (
-    <div className="space-y-3 text-sm font-light leading-relaxed text-ink-soft">
+    <div className="space-y-4 text-base leading-relaxed text-ink-soft">
       <p>
-        This guide is always one click away from the{' '}
-        <strong className="font-normal text-ink">Help</strong> link at the top
-        of the page, whether or not you keep the floating button below.
+        That’s everything for now. You can change any of this again at any
+        time — there is no way to lose your website by editing it.
+      </p>
+      <p>
+        Forgotten how to get back here? Just press{' '}
+        <strong className="font-normal text-ink">Help</strong> at the top of
+        the page, whenever you like.
       </p>
       {storageWarning ? (
         <p className="border-l-2 border-gold bg-gold-wash/50 px-4 py-3">
-          One thing worth knowing right now: there’s no database connected
-          yet, so anything you saved today will be forgotten the next time
-          the server restarts. Connect Postgres in your Vercel project’s
-          Storage tab to make changes permanent.
+          One important thing to know: what you’ve changed today isn’t being
+          saved for good just yet — it could be lost the next time the
+          website restarts. This is something whoever set up your website
+          can fix in a few minutes, so it’s worth letting them know.
         </p>
       ) : null}
     </div>
