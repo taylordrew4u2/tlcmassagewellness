@@ -19,8 +19,11 @@ A single scrolling page in the brand's green and gold:
 - **Hero** — heading, sub-heading, button label and background photo, all editable
 - **About us** — paragraphs, a list of highlights, and a photo
 - **Our offer** — the treatment list, each with a "Book this" link
-- **Our team** — therapist profiles with photos; optional, so a solo practitioner
-  can leave it off and the section (and its nav link) disappears entirely
+- **Our team** — either one profile for a solo practitioner (however they'd
+  like to be addressed, plus a photo and bio) or a full list of therapists;
+  switchable from the admin at any time
+- **Intake questions** — optional custom questions on the booking form, shown
+  only when turned on
 - **Book a visit** — the request form
 - **Contact** — address, opening hours, phone, email, directions link
 - **Footer** — social links and a staff login link
@@ -36,8 +39,9 @@ Sign in with the password (default `Elliott1999` — see [Environment variables]
 |---|---|
 | **Bookings** | See every request. **Accept** or **decline** it in one tap, mark it done, reopen it, leave a private note, or open a pre-written reply in your own mail app. Filter by status; the tab shows a badge for anything still waiting. |
 | **Treatments** | Add, edit, reorder, hide, or delete treatments. They appear on the website and in the booking form immediately. |
-| **Team** | Add, edit, reorder, hide, or delete therapists. Leave everyone hidden and the whole section disappears from the site. |
-| **Website** | Every heading, paragraph, label, address, opening hour and image link on the public site, grouped into eight sections. Also holds the switch that closes bookings, and the list of appointment times people can choose from. |
+| **Team** | A switch at the top picks **Just me** or **Team**. Solo mode is a single profile — name (however you'd like to be addressed), title, photo, bio. Team mode is the full add/edit/reorder/hide/delete list for multiple therapists. Switching modes doesn't delete anything; extra profiles just wait, hidden, until you switch back. |
+| **Intake form** | Add, edit, reorder, or remove the custom questions shown on the booking form — short answer, long answer, or yes/no, each optionally required. The switch that turns the whole thing on, and its intro text, live on the Website tab. |
+| **Website** | Every heading, paragraph, label, address, opening hour and image link on the public site, grouped into sections. Also holds the switch that closes bookings, the list of appointment times people can choose from, and the intake-form switch and intro text. |
 
 A guided setup walks through the site section by section — one click away
 from the **Help** link at the top of the page, and from a floating button in
@@ -49,7 +53,8 @@ tab. The floating button can be turned off from inside the guide — the
 
 ### How a booking flows
 
-1. A visitor fills in the form: name, email, phone, treatment, date, time, notes.
+1. A visitor fills in the form: name, email, phone, treatment, date, time,
+   any intake questions you've turned on, and notes.
 2. It arrives in the admin as **awaiting answer**, and the Bookings tab shows a count.
 3. You **accept** or **decline**. Accepted requests can later be marked **completed**.
 4. "Email them" opens your normal mail app with the confirmation already written.
@@ -159,7 +164,8 @@ app/
     ├── AdminDashboard.tsx    Tabs
     ├── BookingsPanel.tsx     Accept / decline / notes
     ├── ServicesPanel.tsx     Treatment editor
-    ├── TeamPanel.tsx         Team editor
+    ├── TeamPanel.tsx         Solo profile / team editor, switchable
+    ├── IntakePanel.tsx       Intake question editor
     ├── ContentPanel.tsx      Website copy editor
     ├── ContentField.tsx      One content field, shared by ContentPanel and HelpGuide
     ├── ImageUploadField.tsx  Photo upload widget, shared by the panels above

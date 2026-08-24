@@ -1,5 +1,5 @@
 import { toLines, type SiteContent } from '../lib/content';
-import type { Service } from '../lib/db';
+import type { IntakeQuestion, Service } from '../lib/db';
 import BookingForm from './BookingForm';
 import Reveal from './Reveal';
 
@@ -12,14 +12,19 @@ import Reveal from './Reveal';
 export default function BookingSection({
   content,
   services,
+  intakeQuestions,
   initialService,
 }: {
   content: SiteContent;
   services: Service[];
+  /** Already filtered to active questions — hidden entirely when the
+   *  intake switch itself is off, regardless of what's in the list. */
+  intakeQuestions: IntakeQuestion[];
   initialService?: string;
 }) {
   const open = content.bookings_open === 'true' && services.length > 0;
   const slots = toLines(content.booking_slots);
+  const questions = content.intake_enabled === 'true' ? intakeQuestions : [];
 
   return (
     <section id="book" className="bg-green-wash/40 py-24 sm:py-32">
@@ -52,6 +57,8 @@ export default function BookingSection({
                 slots={slots}
                 confirmation={content.booking_confirmation}
                 initialService={initialService}
+                intakeQuestions={questions}
+                intakeIntro={content.intake_intro}
               />
             ) : (
               <div className="py-6 text-center">

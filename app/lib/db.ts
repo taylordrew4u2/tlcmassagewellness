@@ -61,9 +61,39 @@ export interface Booking {
   preferred_date: string;
   preferred_time: string;
   notes: string | null;
+  /** JSON-stringified `{ label, answer }[]`, with the question's label copied
+   *  at request time — same reasoning as `service` above. Null when intake
+   *  questions were off, or there were none, when this was sent. */
+  intake_answers: string | null;
   status: BookingStatus;
   admin_notes: string | null;
   created_at: string;
+}
+
+/** One question the visitor answers on the booking form. */
+export const INTAKE_QUESTION_TYPES = ['short', 'long', 'yesno'] as const;
+
+export type IntakeQuestionType = (typeof INTAKE_QUESTION_TYPES)[number];
+
+export function isIntakeQuestionType(value: unknown): value is IntakeQuestionType {
+  return INTAKE_QUESTION_TYPES.includes(value as IntakeQuestionType);
+}
+
+export interface IntakeQuestion {
+  id: number;
+  label: string;
+  type: IntakeQuestionType;
+  required: boolean;
+  sort_order: number;
+  is_active: boolean;
+}
+
+export type IntakeQuestionInput = Omit<IntakeQuestion, 'id'>;
+
+/** One answer, paired with the question's label as it read at request time. */
+export interface IntakeAnswer {
+  label: string;
+  answer: string;
 }
 
 export interface Service {
@@ -158,6 +188,7 @@ interface MemoryStore {
   content: SiteContent;
   services: Service[];
   team: TeamMember[];
+  intakeQuestions: IntakeQuestion[];
   bookings: Booking[];
   nextId: number;
 }
@@ -172,6 +203,7 @@ const memory: MemoryStore = ((
   content: {},
   services: SEED_SERVICES.map((s, i) => ({ ...s, id: i + 1 })),
   team: SEED_TEAM.map((m, i) => ({ ...m, id: 100 + i })),
+  intakeQuestions: [],
   bookings: [],
   nextId: 1000,
 });
@@ -227,6 +259,20 @@ function ensureSchema(): Promise<void> {
         status         TEXT        NOT NULL DEFAULT 'pending',
         admin_notes    TEXT,
         created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `;
+    /* Added after the table above already existed on deployed sites, so a
+       plain CREATE TABLE IF NOT EXISTS would never add it there. */
+    await sql`ALTER TABLE bookings ADD COLUMN IF NOT EXISTS intake_answers TEXT`;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS intake_questions (
+        id          SERIAL PRIMARY KEY,
+        label       TEXT    NOT NULL,
+        type        TEXT    NOT NULL DEFAULT 'short',
+        required    BOOLEAN NOT NULL DEFAULT FALSE,
+        sort_order  INTEGER NOT NULL DEFAULT 0,
+        is_active   BOOLEAN NOT NULL DEFAULT TRUE
       )
     `;
 
@@ -418,6 +464,66 @@ export async function deleteTeamMember(id: number): Promise<boolean> {
   return (rowCount ?? 0) > 0;
 }
 
+// ── Intake questions ───────────────────────────────────────────────────────────
+
+export async function getIntakeQuestions(): Promise<IntakeQuestion[]> {
+  if (!hasDatabase()) return [...memory.intakeQuestions].sort(byOrder);
+  try {
+    await ensureSchema();
+    const { rows } = await sql`SELECT * FROM intake_questions ORDER BY sort_order ASC, id ASC`;
+    return rows as unknown as IntakeQuestion[];
+  } catch (err) {
+    console.error('Could not read intake questions:', err);
+    return [];
+  }
+}
+
+export async function insertIntakeQuestion(data: IntakeQuestionInput): Promise<number> {
+  if (!hasDatabase()) {
+    const id = memoryId();
+    memory.intakeQuestions.push({ ...data, id });
+    return id;
+  }
+  await ensureSchema();
+  const { rows } = await sql`
+    INSERT INTO intake_questions (label, type, required, sort_order, is_active)
+    VALUES (${data.label}, ${data.type}, ${data.required}, ${data.sort_order}, ${data.is_active})
+    RETURNING id
+  `;
+  return (rows[0] as { id: number }).id;
+}
+
+export async function updateIntakeQuestion(
+  id: number,
+  data: IntakeQuestionInput,
+): Promise<boolean> {
+  if (!hasDatabase()) {
+    const found = memory.intakeQuestions.find((q) => q.id === id);
+    if (!found) return false;
+    Object.assign(found, data);
+    return true;
+  }
+  await ensureSchema();
+  const { rowCount } = await sql`
+    UPDATE intake_questions
+    SET label = ${data.label}, type = ${data.type}, required = ${data.required},
+        sort_order = ${data.sort_order}, is_active = ${data.is_active}
+    WHERE id = ${id}
+  `;
+  return (rowCount ?? 0) > 0;
+}
+
+export async function deleteIntakeQuestion(id: number): Promise<boolean> {
+  if (!hasDatabase()) {
+    const before = memory.intakeQuestions.length;
+    memory.intakeQuestions = memory.intakeQuestions.filter((q) => q.id !== id);
+    return memory.intakeQuestions.length < before;
+  }
+  await ensureSchema();
+  const { rowCount } = await sql`DELETE FROM intake_questions WHERE id = ${id}`;
+  return (rowCount ?? 0) > 0;
+}
+
 // ── Bookings ───────────────────────────────────────────────────────────────────
 
 export interface BookingInput {
@@ -428,6 +534,7 @@ export interface BookingInput {
   preferred_date: string;
   preferred_time: string;
   notes: string | null;
+  intake_answers: string | null;
 }
 
 export async function insertBooking(data: BookingInput): Promise<number> {
@@ -444,9 +551,9 @@ export async function insertBooking(data: BookingInput): Promise<number> {
   }
   await ensureSchema();
   const { rows } = await sql`
-    INSERT INTO bookings (name, email, phone, service, preferred_date, preferred_time, notes)
+    INSERT INTO bookings (name, email, phone, service, preferred_date, preferred_time, notes, intake_answers)
     VALUES (${data.name}, ${data.email}, ${data.phone}, ${data.service},
-            ${data.preferred_date}, ${data.preferred_time}, ${data.notes})
+            ${data.preferred_date}, ${data.preferred_time}, ${data.notes}, ${data.intake_answers})
     RETURNING id
   `;
   return (rows[0] as { id: number }).id;

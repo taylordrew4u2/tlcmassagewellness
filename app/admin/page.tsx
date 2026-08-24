@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
 import { isAdmin } from '../actions';
-import { getBookings, getContent, getServices, getTeam, hasDatabase } from '../lib/db';
+import {
+  getBookings,
+  getContent,
+  getIntakeQuestions,
+  getServices,
+  getTeam,
+  hasDatabase,
+} from '../lib/db';
 import AdminDashboard from './AdminDashboard';
 import LoginForm from './LoginForm';
 
@@ -18,10 +25,11 @@ export default async function AdminPage() {
     return <LoginForm brandMark={content.brand_mark} brandTagline={content.brand_tagline} />;
   }
 
-  const [bookings, services, team] = await Promise.all([
+  const [bookings, services, team, intakeQuestions] = await Promise.all([
     getBookings(),
     getServices(),
     getTeam(),
+    getIntakeQuestions(),
   ]);
 
   return (
@@ -30,6 +38,7 @@ export default async function AdminPage() {
       bookings={bookings}
       services={services}
       team={team}
+      intakeQuestions={intakeQuestions}
       storageWarning={!hasDatabase()}
     />
   );

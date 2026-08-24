@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getContent, getServices, getTeam } from '../lib/db';
+import { getContent, getIntakeQuestions, getServices, getTeam } from '../lib/db';
 import BookingSection from '../_components/BookingSection';
 import SiteShell from '../_components/SiteShell';
 
@@ -20,15 +20,17 @@ export default async function BookPage({
 }: {
   searchParams: Promise<{ treatment?: string | string[] }>;
 }) {
-  const [content, allServices, allTeam, params] = await Promise.all([
+  const [content, allServices, allTeam, allIntakeQuestions, params] = await Promise.all([
     getContent(),
     getServices(),
     getTeam(),
+    getIntakeQuestions(),
     searchParams,
   ]);
 
   const services = allServices.filter((s) => s.is_active);
   const hasTeam = allTeam.some((m) => m.is_active);
+  const intakeQuestions = allIntakeQuestions.filter((q) => q.is_active);
 
   // Matched against the real list, so a hand-typed query string can't preselect
   // something that isn't on offer.
@@ -41,6 +43,7 @@ export default async function BookPage({
         <BookingSection
           content={content}
           services={services}
+          intakeQuestions={intakeQuestions}
           initialService={initialService}
         />
       </div>

@@ -187,6 +187,13 @@ export const CONTENT_GROUPS: ContentGroup[] = [
     description: 'Wording around the therapist profiles. The people themselves live on the Team tab.',
     fields: [
       {
+        key: 'practice_mode',
+        label: 'Team practice',
+        type: 'toggle',
+        help: 'On for multiple therapists, off if it’s just you. Also switchable from the top of the Team tab.',
+        default: 'false',
+      },
+      {
         key: 'team_eyebrow',
         label: 'Small line above the heading',
         type: 'text',
@@ -259,6 +266,28 @@ export const CONTENT_GROUPS: ContentGroup[] = [
         type: 'textarea',
         default:
           'My books are closed for the moment. Please check back soon, or get in touch and I will let you know as soon as they reopen.',
+      },
+    ],
+  },
+  {
+    id: 'intake',
+    title: 'Intake form',
+    description:
+      'Optional questions added to the booking form. The questions themselves live on the Intake tab.',
+    fields: [
+      {
+        key: 'intake_enabled',
+        label: 'Ask intake questions',
+        type: 'toggle',
+        help: 'Turn this on to add your own questions to the booking form.',
+        default: 'false',
+      },
+      {
+        key: 'intake_intro',
+        label: 'Intro text',
+        type: 'textarea',
+        help: 'Shown above the questions on the booking form. Optional.',
+        default: 'A few quick questions before your visit.',
       },
     ],
   },

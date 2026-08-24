@@ -9,6 +9,8 @@
 - [x] Private admin notes per booking, and a pre-written reply that opens in your mail app
 - [x] Treatment editor — add, edit, reorder, hide, delete (no prices yet)
 - [x] Team editor — profiles with photos, hidden when nobody is listed
+- [x] Just me / Team switch — a single addressable profile for a solo practitioner, or the full multi-person editor
+- [x] Custom intake questions, editable in the admin, shown on the booking form only when turned on, with answers attached to each request
 - [x] Website editor — every heading, paragraph, address and image link on the site
 - [x] Switch to close bookings, with an editable notice in place of the form
 - [x] Editable list of appointment times

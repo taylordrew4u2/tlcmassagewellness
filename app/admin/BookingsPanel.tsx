@@ -10,6 +10,7 @@ import {
   BOOKING_STATUSES,
   type Booking,
   type BookingStatus,
+  type IntakeAnswer,
 } from '../lib/db';
 import {
   dangerButton,
@@ -43,6 +44,22 @@ const STATUS_LABEL: Record<BookingStatus, string> = {
   completed: 'Completed',
   declined: 'Declined',
 };
+
+/** Stored as a JSON snapshot at booking time — defensive parsing so a bad or
+ *  missing value just hides the section rather than breaking the page. */
+function parseIntakeAnswers(raw: string | null): IntakeAnswer[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (item): item is IntakeAnswer =>
+        item && typeof item.label === 'string' && typeof item.answer === 'string',
+    );
+  } catch {
+    return [];
+  }
+}
 
 export default function BookingsPanel({
   bookings: initial,
@@ -195,6 +212,8 @@ function BookingCard({
     booking.preferred_time ? ` at ${booking.preferred_time}` : ''
   }`;
 
+  const intakeAnswers = parseIntakeAnswers(booking.intake_answers);
+
   /* A confirmation email the owner sends themselves, from their own mail app —
      no sending domain, no API key, nothing to pay for. */
   const mailto = `mailto:${encodeURIComponent(booking.email)}?subject=${encodeURIComponent(
@@ -257,6 +276,19 @@ function BookingCard({
             <p className="mt-4 border-l-2 border-green-wash pl-4 text-sm font-light italic leading-relaxed text-ink-soft">
               “{booking.notes}”
             </p>
+          ) : null}
+
+          {intakeAnswers.length ? (
+            <dl className="mt-4 space-y-2 border-l-2 border-green-wash pl-4">
+              {intakeAnswers.map((a, i) => (
+                <div key={i}>
+                  <dt className="text-[11px] uppercase tracking-[0.14em] text-ink-soft/70">
+                    {a.label}
+                  </dt>
+                  <dd className="text-sm font-light text-ink">{a.answer}</dd>
+                </div>
+              ))}
+            </dl>
           ) : null}
 
           <p className="mt-4 text-[11px] uppercase tracking-[0.16em] text-ink-soft/60">

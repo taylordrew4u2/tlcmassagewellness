@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { requestBooking, type BookingState } from '../actions';
+import type { IntakeQuestion } from '../lib/db';
 
 interface BookingFormProps {
   services: { id: number; name: string; duration: string }[];
@@ -9,6 +10,8 @@ interface BookingFormProps {
   confirmation: string;
   /** Pre-selects a treatment when someone came from a "Book this" link. */
   initialService?: string;
+  intakeQuestions: IntakeQuestion[];
+  intakeIntro?: string;
 }
 
 const field =
@@ -27,6 +30,8 @@ export default function BookingForm({
   slots,
   confirmation,
   initialService,
+  intakeQuestions,
+  intakeIntro,
 }: BookingFormProps) {
   const [state, formAction, pending] = useActionState<BookingState, FormData>(
     requestBooking,
@@ -187,6 +192,87 @@ export default function BookingForm({
           </select>
         </div>
       </div>
+
+      {intakeQuestions.length ? (
+        <div className="space-y-8 border-t border-green-wash pt-8">
+          {intakeIntro ? (
+            <p className="whitespace-pre-line text-sm font-light leading-relaxed text-ink-soft">
+              {intakeIntro}
+            </p>
+          ) : null}
+          {intakeQuestions.map((q) => {
+            const name = `intake_${q.id}`;
+            const questionLabel = (
+              <>
+                {q.label}{' '}
+                {q.required ? null : (
+                  <span className="normal-case tracking-normal text-ink-soft/70">
+                    (optional)
+                  </span>
+                )}
+              </>
+            );
+            if (q.type === 'long') {
+              return (
+                <div key={q.id}>
+                  <label className={label} htmlFor={name}>
+                    {questionLabel}
+                  </label>
+                  <textarea
+                    id={name}
+                    name={name}
+                    rows={3}
+                    maxLength={1000}
+                    required={q.required}
+                    className={`${field} resize-y`}
+                  />
+                </div>
+              );
+            }
+            if (q.type === 'yesno') {
+              return (
+                <div key={q.id}>
+                  <label className={label} htmlFor={name}>
+                    {questionLabel}
+                  </label>
+                  <select
+                    id={name}
+                    name={name}
+                    required={q.required}
+                    defaultValue=""
+                    className={`${field} appearance-none bg-[length:0.7rem] bg-[right_0.2rem_center] bg-no-repeat pr-6`}
+                    style={{
+                      backgroundImage:
+                        "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23a89240' stroke-width='1.4'/%3E%3C/svg%3E\")",
+                    }}
+                  >
+                    <option value="" disabled>
+                      Choose one
+                    </option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+              );
+            }
+            return (
+              <div key={q.id}>
+                <label className={label} htmlFor={name}>
+                  {questionLabel}
+                </label>
+                <input
+                  id={name}
+                  name={name}
+                  type="text"
+                  maxLength={1000}
+                  required={q.required}
+                  className={field}
+                />
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
 
       <div>
         <label className={label} htmlFor="booking-notes">

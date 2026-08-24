@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { toLines, toParagraphs } from './lib/content';
-import { getContent, getServices, getTeam } from './lib/db';
+import { getContent, getIntakeQuestions, getServices, getTeam } from './lib/db';
 import { toHttpUrl } from './lib/normalize';
 import BookingSection from './_components/BookingSection';
 import Reveal from './_components/Reveal';
@@ -11,14 +11,18 @@ import SiteShell from './_components/SiteShell';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [content, allServices, allTeam] = await Promise.all([
+  const [content, allServices, allTeam, allIntakeQuestions] = await Promise.all([
     getContent(),
     getServices(),
     getTeam(),
+    getIntakeQuestions(),
   ]);
 
   const services = allServices.filter((s) => s.is_active);
-  const team = allTeam.filter((m) => m.is_active);
+  const activeTeam = allTeam.filter((m) => m.is_active);
+  // Solo practices only ever show the one profile, however many are saved.
+  const team = content.practice_mode === 'true' ? activeTeam : activeTeam.slice(0, 1);
+  const intakeQuestions = allIntakeQuestions.filter((q) => q.is_active);
 
   const heroLines = toLines(content.hero_heading);
   const heroImage = toHttpUrl(content.hero_image_url);
@@ -315,7 +319,7 @@ export default async function HomePage() {
       ) : null}
 
       {/* ── Booking ──────────────────────────────────────────────────────── */}
-      <BookingSection content={content} services={services} />
+      <BookingSection content={content} services={services} intakeQuestions={intakeQuestions} />
 
       {/* ── Contact ──────────────────────────────────────────────────────── */}
       <section id="contact" className="bg-cream py-24 sm:py-32">
