@@ -1,0 +1,37 @@
+{
+  "title": "TLC Massage Wellness — portfolio showcase",
+  "duration_seconds": 20,
+  "seconds_per_card": 4,
+  "frames_per_second": 30,
+  "frames_per_card": 120,
+  "total_frames": 600,
+  "audio": "Intentionally silent; all information is carried by the image and on-screen text.",
+  "transitions": "Simple cuts between five cards in the same brand palette.",
+  "motion": "Center zoom from 1.00 to 1.03 over each card, with 2x source oversampling.",
+  "codec": "H.264 / libx264",
+  "pixel_format": "yuv420p",
+  "encoder_preset": "slow",
+  "crf": 18,
+  "faststart": true,
+  "variants": {
+    "landscape": {
+      "width": 1920,
+      "height": 1080,
+      "aspect_ratio": "16:9",
+      "filename": "tlc-portfolio-landscape.mp4"
+    },
+    "portrait": {
+      "width": 1080,
+      "height": 1920,
+      "aspect_ratio": "9:16",
+      "filename": "tlc-portfolio-vertical.mp4"
+    }
+  },
+  "cards": [
+    { "file": "01.png", "title": "Wellness, thoughtfully presented", "start_seconds": 0, "end_seconds": 4 },
+    { "file": "02.png", "title": "A clear next step", "start_seconds": 4, "end_seconds": 8 },
+    { "file": "03.png", "title": "Review. Accept. Complete.", "start_seconds": 8, "end_seconds": 12 },
+    { "file": "04.png", "title": "Keep the website yours", "start_seconds": 12, "end_seconds": 16 },
+    { "file": "05.png", "title": "Explore the project", "start_seconds": 16, "end_seconds": 20 }
+  ]
+}
